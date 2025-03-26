@@ -62,5 +62,5 @@ COPY ./start.sh start.sh
 # Set the entrypoint
 ENTRYPOINT ["./start.sh"]
 
-# docker build -f dockerfiles/ubuntu -t wyoming-whisper-cpp:vulkan .
+# docker build -f dockerfiles/ubuntu-vulkan-mesa -t wyoming-whisper-cpp:vulkan .
 # docker run -it --rm --network host -v ./data:/wd/data --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --group-add video wyoming-whisper-cpp:vulkan
