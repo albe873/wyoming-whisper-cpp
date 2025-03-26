@@ -1,0 +1,66 @@
+# Use the official Ubuntu base image
+FROM ubuntu:24.04 AS build
+
+# Install Whisper.cpp dependencies for building
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    ca-certificates \
+    cmake \
+    build-essential \
+    libvulkan-dev \
+    glslc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone the Whisper.cpp repository
+RUN git clone https://github.com/ggerganov/whisper.cpp
+WORKDIR /whisper.cpp
+
+# Copy simple-server source files
+COPY ./simple-server/ /whisper.cpp/examples/simple-server/
+
+# add the sibdirectory to the CMakeLists.txt
+RUN echo "add_subdirectory(simple-server)" >> /whisper.cpp/examples/CMakeLists.txt
+
+# Build Whisper.cpp (with Vulkan support)
+# added -DVulkan_INCLUDE_DIR=/usr/include/vulkan to fix Vulkan not found error
+RUN cmake -B build -DGGML_VULKAN=1 -DVulkan_INCLUDE_DIR=/usr/include/vulkan
+RUN cmake --build build -j --config Release
+
+
+# Base image for running the Wyoming server
+FROM ubuntu:24.04
+
+# Install Vulkan and Wyoming Whisper dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    mesa-vulkan-drivers \
+    python3-pip \
+    libgomp1 \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Wyoming
+RUN pip3 install --no-cache-dir --break-system-packages wyoming numpy
+
+
+WORKDIR /wd
+
+# Copy the Whisper.cpp build (only the necessary files)
+COPY --from=build /whisper.cpp/build/bin/simple-server whisper.cpp/build/bin/
+COPY --from=build /whisper.cpp/build/src/libwhisper.so* whisper.cpp/build/src/
+COPY --from=build /whisper.cpp/build/ggml/src/libggml* whisper.cpp/build/ggml/src/
+COPY --from=build /whisper.cpp/build/ggml/src/ggml-vulkan/libggml-vulkan.so whisper.cpp/build/ggml/src/ggml-vulkan/
+
+# Copy the Wyoming Whisper C++ scripts to download models
+COPY --from=build /whisper.cpp/models/ whisper.cpp/models/
+
+# Copy the Wyoming Whisper C++ server
+COPY ./wyoming_whisper_cpp wyoming_whisper_cpp/
+COPY ./start.sh start.sh
+
+# Set the entrypoint
+ENTRYPOINT ["./start.sh"]
+
+# docker build -f dockerfiles/ubuntu -t wyoming-whisper-cpp:vulkan .
+# docker run -it --rm --network host -v ./data:/wd/data --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --group-add video wyoming-whisper-cpp:vulkan

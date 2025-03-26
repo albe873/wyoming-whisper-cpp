@@ -1,0 +1,5 @@
+
+/.vscode
+/data
+/wyoming_whisper_cpp/__pycache__
+/whisper.cpp

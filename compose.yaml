@@ -1,0 +1,25 @@
+# example of docker-compose file 
+
+services:
+  whisper:
+    image: franc2002/wyoming-whisper-cpp:vulkan
+    container_name: wyoming-whisper
+    restart: unless-stopped
+    group_add:
+      - video
+    volumes:
+      - whisper-data:/wd/data
+    command:
+      - --language
+      - en
+      - --model
+      - large-v3-turbo-q5_0
+
+    ports:
+      - 10300:10300
+    devices:
+      - "/dev/dri"
+      - "/dev/kfd"
+
+volumes:
+  whisper-data:
