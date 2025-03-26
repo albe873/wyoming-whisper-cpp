@@ -7,12 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 512
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
       - name: Checkout
         uses: actions/checkout@v4
       
@@ -28,10 +22,10 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/rocm-wyoming-whisper
+            ${{ secrets.DOCKERHUB_USERNAME }}/wyoming-whisper-cpp
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value={{date 'YYYY-MM-DD-HH.mm' tz='Europe/Rome'}}
+            type=raw,value=vulkan-{{date 'YYYY-MM-DD-HH.mm' tz='UTC'}}
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
