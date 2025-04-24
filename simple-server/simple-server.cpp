@@ -194,7 +194,7 @@ int main(int argc, char ** argv) {
 
     // audio buffer and other variables
     float pcmf32[n_samples_30s];
-    int pcmf32_len = 0, i, j, n_segments, token_count, tocopy;
+    int pcmf32_len = 0, i, j, n_segments, token_count, segments_to_copy, bytes_to_copy;
     size_t b_read;
     float pcmf32_temp[n_samples_keep];
     bool markerFound, should_process = false;
@@ -265,10 +265,11 @@ int main(int argc, char ** argv) {
                 }
 
                 // keep part of the audio for next iteration to try to mitigate word boundary issues
-                tocopy = std::min(n_samples_keep, pcmf32_len) * sizeof(float);
-                memcpy(pcmf32_temp, pcmf32 + pcmf32_len * sizeof(float) - tocopy, tocopy);
-                memcpy(pcmf32, pcmf32_temp, tocopy);
-                pcmf32_len = tocopy / sizeof(float);
+                segments_to_copy = std::min(n_samples_keep, pcmf32_len);
+                bytes_to_copy = segments_to_copy * sizeof(float);
+                memcpy(pcmf32_temp, pcmf32 + pcmf32_len - segments_to_copy, bytes_to_copy);
+                memcpy(pcmf32, pcmf32_temp, bytes_to_copy);
+                pcmf32_len = segments_to_copy;
 
                 should_process = false;
             }
