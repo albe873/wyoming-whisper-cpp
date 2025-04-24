@@ -24,6 +24,7 @@ Build docker image:
 ```shell
 docker build -f dockerfiles/ubuntu-vulkan-mesa -t wyoming-whisper-cpp:vulkan .
 ```
+Prebuild images published on dockerhub: https://hub.docker.com/r/franc2002/wyoming-whisper-cpp
 
 If you don't want to use docker, just follow all the command used in the dockerfile 
 
