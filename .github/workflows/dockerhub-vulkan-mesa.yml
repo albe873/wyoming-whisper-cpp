@@ -25,7 +25,8 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/wyoming-whisper-cpp
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=vulkan-{{date 'YYYY-MM-DD-HH.mm' tz='UTC'}},vulkan
+            type=raw,value=vulkan-{{date 'YYYY-MM-DD-HH.mm' tz='UTC'}}
+            type=raw,value=vulkan
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
