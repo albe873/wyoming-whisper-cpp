@@ -12,9 +12,7 @@ RUN sudo apt-get update && \
     build-essential \
     hipblas-dev \
     rocblas-dev \
-    && sudo rm -rf /var/lib/apt/lists/*
-
-# sudo apt install hipblas 
+    && sudo apt clean && sudo rm -rf /var/lib/apt/lists/*
     
 # Clone the Whisper.cpp repository
 WORKDIR ${BASEDIR}
@@ -44,7 +42,7 @@ RUN sudo apt-get update && \
     wget \
     hipblas \
     rocblas \
-    && sudo rm -rf /var/lib/apt/lists/*
+    && sudo apt clean && sudo rm -rf /var/lib/apt/lists/*
 
 # Install Wyoming
 RUN pip3 install --no-cache-dir --break-system-packages wyoming numpy
@@ -70,4 +68,4 @@ COPY ./start.sh ${BASEDIR}/start.sh
 ENTRYPOINT ["./start.sh"]
 
 # docker build -f dockerfiles/ubuntu-rocm -t wyoming-whisper-cpp:rocm .
-# docker run -it --rm --network host -v ./data:/data --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --group-add video wyoming-whisper-cpp:rocm
+# docker run -it --rm --network host -v ./data:/data --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --group-add video wyoming-whisper-cpp:rocm --model large-v3-turbo-q5_0

@@ -63,4 +63,5 @@ COPY ./start.sh start.sh
 ENTRYPOINT ["./start.sh"]
 
 # docker build -f dockerfiles/ubuntu-vulkan-mesa -t wyoming-whisper-cpp:vulkan .
-# docker run -it --rm --network host -v ./data:/wd/data --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --group-add video wyoming-whisper-cpp:vulkan
+# run test command for amd gpus
+# docker run -it --rm --network host -v ./data:/data --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --group-add video wyoming-whisper-cpp:vulkan --model large-v3-turbo-q5_0
