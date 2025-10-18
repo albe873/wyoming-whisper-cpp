@@ -8,7 +8,7 @@ services:
     group_add:
       - video
     volumes:
-      - whisper-data:/wd/data
+      - whisper-data:/data
     command:
       - --language
       - en
@@ -18,8 +18,8 @@ services:
     ports:
       - 10300:10300
     devices:
-      - "/dev/dri"
-      - "/dev/kfd"
+      - "/dev/dri" # pass through GPU device, needed for vulkan and rocm
+      - "/dev/kfd" # pass through GPU device, needed for rocm
 
 volumes:
   whisper-data:
